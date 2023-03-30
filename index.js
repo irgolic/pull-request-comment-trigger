@@ -21,15 +21,6 @@ async function run() {
             : context.payload.pull_request.body) || '';
     core.setOutput('comment_body', body);
 
-    if (
-        context.eventName === "issue_comment" &&
-        !context.payload.issue.pull_request
-    ) {
-        // not a pull-request comment, aborting
-        core.setOutput("triggered", "false");
-        return;
-    }
-
     const { owner, repo } = context.repo;
 
 
