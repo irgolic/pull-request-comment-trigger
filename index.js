@@ -15,10 +15,11 @@ async function run() {
 
     const body =
         (context.eventName === "issue_comment"
-        // For comments on pull requests
+        // For comments
             ? context.payload.comment.body
-            // For the initial pull request description
-            : context.payload.pull_request.body) || '';
+            // For the initial issue description
+            : context.payload.issue.body) || '';
+    core.debug(body);
     core.setOutput('comment_body', body);
 
     const { owner, repo } = context.repo;
@@ -27,8 +28,10 @@ async function run() {
     const prefixOnly = core.getInput("prefix_only") === 'true';
     if ((prefixOnly && !body.startsWith(trigger)) || !body.includes(trigger)) {
         core.setOutput("triggered", "false");
+        core.debug('didnt find the trigger')
         return;
     }
+    core.debug('found da trigger')
 
     core.setOutput("triggered", "true");
 
@@ -48,7 +51,7 @@ async function run() {
         await client.reactions.createForIssue({
             owner,
             repo,
-            issue_number: context.payload.pull_request.number,
+            issue_number: context.payload.issue.number,
             content: reaction
         });
     }
